@@ -1,10 +1,8 @@
 /******************************************************************************************
- * FileName     : 02._dht11_oled
- * Description  : 온습도 센서의 값을 시리얼 모니터에 출력해 보기
- * Author       : 박은정
- * Created Date : 2023.08.17
- * Reference    : 
- * Modified     : 
+ * FileName     : main.ino
+ * Description  : 온습도 센서, 조도 센서의 값을 HTTP를 통해 0.5초마다 전송
+ * Author       : 박기범
+ * Created Date : 2024.07.24
  ******************************************************************************************/
 #include <WiFi.h>
 #include <HTTPClient.h>
@@ -38,11 +36,11 @@ void loop() {
   serialPrint(data); //시리얼 모니터에 출력 표시
   oledPrint(data); //oled 모듈에 출력 표시
 
-  const char* postServerName = "http://192.168.81.192:8080/";
+  const char* postServerName = "http://192.168.81.192:8080/"; //URL 수정
   String jsonPayload = createJsonPayload(data);
   httpPostRequest(postServerName, jsonPayload);
   
-  delay(10000);  // 10초 지연
+  delay(500);  // 0.5초 지연
 }
 
 void serialPrint(SensorData data){
@@ -59,9 +57,9 @@ void serialPrint(SensorData data){
 void oledPrint(SensorData data){
   // OLED 디스플레이에 출력
   //oled.setLine(1, "Sensor Data"); // OLED 모듈 1번째 줄에 저장
-  oled.setLine(1, "Temp: " + String(data.temperature) + "C"); // OLED 모듈 2번째 줄에 온도 값 저장
-  oled.setLine(2, "Humi: " + String(data.humidity) + "%"); // OLED 모듈 3번째 줄에 습도 값 저장
-  oled.setLine(3, "Light: " + String(data.lightLevel) + "lux"); // OLED 모듈 4번째 줄에 조도 값 저장
+  oled.setLine(1, "Temp: " + String(data.temperature) + "C"); // OLED 모듈 1번째 줄에 온도 값 저장
+  oled.setLine(2, "Humi: " + String(data.humidity) + "%"); // OLED 모듈 2번째 줄에 습도 값 저장
+  oled.setLine(3, "Light: " + String(data.lightLevel) + "lux"); // OLED 모듈 3번째 줄에 조도 값 저장
   oled.display(); // OLED 모듈 출력
 
 }
@@ -124,6 +122,6 @@ String createJsonPayload(SensorData data) {
 
 //=========================================================================================
 //
-// (주)한국공학기술연구원 http://et.ketri.re.kr
+// SW_Bootcamp I5
 //
 //=========================================================================================
