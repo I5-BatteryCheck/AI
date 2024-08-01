@@ -21,29 +21,37 @@ first_camera_index=0
 #third_camera_index=2
 camera_array=[first_camera_index]
 
+# 웹캠 객체를 전역 변수로 선언
+webcams = {}
+
+def initialize_webcams():
+    for index in camera_array:
+        cap = cv2.VideoCapture(index)
+        if cap.isOpened():
+            webcams[index] = cap
+        else:
+            print(f"웹캠 {index}을(를) 열 수 없습니다.")
+
+def release_webcams():
+    for cap in webcams.values():
+        cap.release()
+
 
 #사진 촬영 함수
 def capture(n, width=0, height=0):
-    # 웹캠 열기
-    cap = cv2.VideoCapture(n)  # 0은 기본 웹캠을 의미합니다. 다른 웹캠을 사용하려면 인덱스를 조정하세요.
+    cap = webcams.get(n)
+    if cap is None or not cap.isOpened():
+        print(f"웹캠 {n}이(가) 열려 있지 않습니다.")
+        return
 
-    if width*height !=0:
+    if width * height != 0:
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
 
-    if not cap.isOpened():
-        print("웹캠을 열 수 없습니다.")
-        return
-
-    # 프레임 읽기
     ret, frame = cap.read()
-
     if not ret:
         print("프레임을 읽을 수 없습니다.")
         return
-
-    # 리소스 해제
-    cap.release()
 
     return frame
 
@@ -96,9 +104,10 @@ def read_sensor():
     print(3)
     for n in camera_array:
         ct = capture(n, 160,140)
-        array = ct.astype(np.uint8)
-        image = Image.fromarray(array)
-        image.save(f'./monitor_{n}.jpg')
+        if ct is not None: 
+            array = ct.astype(np.uint8)
+            image = Image.fromarray(array)
+            image.save(f'./monitor_{n}.jpg')
         index+=1
     
     print(4)
@@ -139,10 +148,11 @@ def read_capture():
             files = []
             for n in camera_array:
                 ct = capture(n, 640,480)
-                array = ct.astype(np.uint8)
-                image = Image.fromarray(array)
-                image.save(f'image_{image_index}.jpg')
-                files.append( ('images', (f'image_{image_index}.jpg', open(f'./image_{n}.jpg', 'rb'), 'image/jpg' )) )
+                if ct is not None:
+                    array = ct.astype(np.uint8)
+                    image = Image.fromarray(array)
+                    image.save(f'image_{image_index}.jpg')
+                    files.append( ('images', (f'image_{image_index}.jpg', open(f'./image_{n}.jpg', 'rb'), 'image/jpg' )) )
                 image_index+=1
         
             print(5)
