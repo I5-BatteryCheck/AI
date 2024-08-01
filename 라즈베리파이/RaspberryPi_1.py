@@ -15,7 +15,7 @@ app = Flask(__name__)
 
 front_server_url = ['http://192.168.253.253:5005/test']
 model_server_url = ['http://172.16.212.152:5020/model']
-arduino = serial.Serial('/dev/ttyttyACM0', 9600)
+arduino = serial.Serial('/dev/ttyACM0', 9600)
 
 # 라즈베리에서 인식한 웹캠의 인덱스 ls /dev/video*로 확인 후 수정
 first_camera_index = 0
