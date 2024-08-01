@@ -17,9 +17,9 @@ arduino = serial.Serial('/dev/ttyttyACM0', 9600)
 
 #라즈베리에서 인식한 웹캡의 인덱스 ls /dev/video*로 확인 후 수정
 first_camera_index=0
-second_camera_index=1
-third_camera_index=2
-
+#second_camera_index=1
+#third_camera_index=2
+camera_array=[first_camera_index]
 
 
 #사진 촬영 함수
@@ -94,7 +94,7 @@ def read_sensor():
         recent_sensors_value[key] = data[key]
     
     print(3)
-    for n in [first_camera_index,second_camera_index,third_camera_index]:
+    for n in camera_array:
         ct = capture(n, 160,140)
         array = ct.astype(np.uint8)
         image = Image.fromarray(array)
@@ -137,7 +137,7 @@ def read_capture():
             image_index=0 #이미지 저장시 이미지간 식별을 위한 인덱스 first_camera_index -> 0 , second_camera_index -> 1 ...
             print(4)
             files = []
-            for n in [first_camera_index,second_camera_index,third_camera_index]:
+            for n in camera_array:
                 ct = capture(n, 640,480)
                 array = ct.astype(np.uint8)
                 image = Image.fromarray(array)
